@@ -1,8 +1,20 @@
+import { db } from '../db';
+import { vjSoftwareTable } from '../db/schema';
 import { type VjSoftware } from '../schema';
+import { asc } from 'drizzle-orm';
 
-export async function getAllVjSoftware(): Promise<VjSoftware[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all VJ software entries from the database.
-    // This should return an array of all software entries, ordered by creation date or name.
-    return Promise.resolve([] as VjSoftware[]);
-}
+export const getAllVjSoftware = async (): Promise<VjSoftware[]> => {
+  try {
+    // Fetch all VJ software entries ordered by name
+    const results = await db.select()
+      .from(vjSoftwareTable)
+      .orderBy(asc(vjSoftwareTable.name))
+      .execute();
+
+    // Cast results to match the expected schema type (JSON columns lose strict typing)
+    return results as VjSoftware[];
+  } catch (error) {
+    console.error('Failed to fetch VJ software:', error);
+    throw error;
+  }
+};

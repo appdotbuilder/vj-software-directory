@@ -1,8 +1,20 @@
+import { db } from '../db';
+import { vjSoftwareTable } from '../db/schema';
+import { eq } from 'drizzle-orm';
 import { type DeleteVjSoftwareInput } from '../schema';
 
 export async function deleteVjSoftware(input: DeleteVjSoftwareInput): Promise<boolean> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is deleting a VJ software entry from the database by its ID.
-    // This should return true if the software was successfully deleted, false if not found.
-    return Promise.resolve(false);
+  try {
+    // Delete the VJ software entry by ID
+    const result = await db.delete(vjSoftwareTable)
+      .where(eq(vjSoftwareTable.id, input.id))
+      .returning({ id: vjSoftwareTable.id })
+      .execute();
+
+    // Return true if a record was deleted, false if no record found
+    return result.length > 0;
+  } catch (error) {
+    console.error('VJ Software deletion failed:', error);
+    throw error;
+  }
 }
